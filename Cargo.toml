@@ -20,22 +20,22 @@ serde = { version = "1.0", features = ["derive"] }
 url = "1.7"
 codec = { package = "parity-scale-codec", version = "1.1", default-features = false, features = ["derive", "full"] }
 
-frame-metadata = { git = "https://github.com/paritytech/substrate/", package = "frame-metadata" }
-frame-support = { git = "https://github.com/paritytech/substrate/", package = "frame-support" }
-sp-runtime = { git = "https://github.com/paritytech/substrate/", package = "sp-runtime" }
-sp-version = { git = "https://github.com/paritytech/substrate/", package = "sp-version" }
-pallet-indices = { git = "https://github.com/paritytech/substrate/", package = "pallet-indices" }
+frame-metadata = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "frame-metadata" }
+frame-support = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "frame-support" }
+sp-runtime = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sp-runtime" }
+sp-version = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sp-version" }
+pallet-indices = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "pallet-indices" }
 hex = "0.4.0"
-sc-rpc-api = { git = "https://github.com/paritytech/substrate/", package = "sc-rpc-api" }
-sp-rpc = { git = "https://github.com/paritytech/substrate/", package = "sp-rpc" }
-sp-core = { git = "https://github.com/paritytech/substrate/", package = "sp-core" }
-sp-transaction-pool = { git = "https://github.com/paritytech/substrate/", package = "sp-transaction-pool" }
+sc-rpc-api = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sc-rpc-api" }
+sp-rpc = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sp-rpc" }
+sp-core = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sp-core" }
+sp-transaction-pool = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sp-transaction-pool" }
 
 [dev-dependencies]
 env_logger = "0.7"
 tokio = "0.1"
 wabt = "0.9"
-frame-system = { git = "https://github.com/paritytech/substrate/", package = "frame-system" }
-node-runtime = { git = "https://github.com/paritytech/substrate/", package = "node-runtime" }
-pallet-balances = { git = "https://github.com/paritytech/substrate/", package = "pallet-balances" }
-sp-keyring = { git = "https://github.com/paritytech/substrate/", package = "sp-keyring" }
+frame-system = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "frame-system" }
+node-runtime = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "node-runtime" }
+pallet-balances = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "pallet-balances" }
+sp-keyring = { git = "https://github.com/paritytech/substrate/", rev = "b94464fb8ee3f72404de08e1589c552822da8d39", package = "sp-keyring" }
