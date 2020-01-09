@@ -17,7 +17,6 @@
 //! A library to **sub**mit e**xt**rinsics to a
 //! [substrate](https://github.com/paritytech/substrate) node via RPC.
 
-#![deny(missing_docs)]
 #![deny(warnings)]
 #![allow(clippy::type_complexity)]
 
@@ -84,7 +83,7 @@ use self::{
             System,
             SystemEvent,
             SystemStore,
-        },
+        }
     },
     metadata::Metadata,
     rpc::{

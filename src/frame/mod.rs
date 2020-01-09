@@ -20,6 +20,7 @@ use codec::Encode;
 
 pub mod balances;
 pub mod contracts;
+pub mod identity;
 pub mod system;
 
 /// Creates module calls
