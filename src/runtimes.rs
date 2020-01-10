@@ -27,6 +27,7 @@ use sp_runtime::{
 use crate::frame::{
     balances::Balances,
     contracts::Contracts,
+    identity::Identity,
     system::System,
 };
 
@@ -54,3 +55,5 @@ impl Balances for DefaultNodeRuntime {
 }
 
 impl Contracts for DefaultNodeRuntime {}
+
+impl Identity for DefaultNodeRuntime {}
