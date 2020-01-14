@@ -85,48 +85,45 @@ pub fn add_kycprovider<T: AssetRegistry>(
 #[derive(Encode)]
 pub struct CreateDidArgs<T: AssetRegistry> {
     registry_id: <T as System>::Hash,
-    referent: <T as System>::AccountId,
+    owner: <T as System>::AccountId,
 }
 
 /// call the extrinsic.
-pub fn create_did<T: AssetRegistry>(
+pub fn create_asset<T: AssetRegistry>(
     registry_id: <T as System>::Hash,
-    referent: <T as System>::AccountId,
+    owner: <T as System>::AccountId,
 ) -> Call<CreateDidArgs<T>> {
     Call::new(
         MODULE,
-        calls::CREATE_DID,
-        CreateDidArgs {
-            registry_id,
-            referent,
-        },
+        calls::CREATE_ASSET,
+        CreateDidArgs { registry_id, owner },
     )
 }
 /// Arguments for creating a registry
 #[derive(Encode)]
-pub struct CreateClaimArgs<T: AssetRegistry> {
-    did_id: <T as System>::Hash,
+pub struct CreatePropertyArgs<T: AssetRegistry> {
+    asset_id: <T as System>::Hash,
     issued: i64,
     expiry: i64,
     assertion: Vec<u8>,
-    data_type: ClaimDataType,
-    value: ClaimDataValue,
+    data_type: PropertyDataType,
+    value: PropertyDataValue,
 }
 
 /// call the extrinsic.
-pub fn create_claim<T: AssetRegistry>(
-    did_id: <T as System>::Hash,
+pub fn create_asset_property<T: AssetRegistry>(
+    asset_id: <T as System>::Hash,
     issued: i64,
     expiry: i64,
     assertion: Vec<u8>,
-    data_type: ClaimDataType,
-    value: ClaimDataValue,
-) -> Call<CreateClaimArgs<T>> {
+    data_type: PropertyDataType,
+    value: PropertyDataValue,
+) -> Call<CreatePropertyArgs<T>> {
     Call::new(
         MODULE,
-        calls::CREATE_CLAIM,
-        CreateClaimArgs {
-            did_id,
+        calls::CREATE_ASSET_PROPERTY,
+        CreatePropertyArgs {
+            asset_id,
             issued,
             expiry,
             assertion,
@@ -137,30 +134,36 @@ pub fn create_claim<T: AssetRegistry>(
 }
 /// Arguments for creating a registry
 #[derive(Encode)]
-pub struct VerifyClaimArgs<T: AssetRegistry> {
-    did_id: <T as System>::Hash,
-    claim_id: <T as System>::Hash,
+pub struct VerifyPropertyArgs<T: AssetRegistry> {
+    asset_id: <T as System>::Hash,
+    property_id: <T as System>::Hash,
 }
 
 /// call the extrinsic.
-pub fn verify_claim<T: AssetRegistry>(
-    did_id: <T as System>::Hash,
-    claim_id: <T as System>::Hash,
-) -> Call<VerifyClaimArgs<T>> {
+pub fn verify_asset_property<T: AssetRegistry>(
+    asset_id: <T as System>::Hash,
+    property_id: <T as System>::Hash,
+) -> Call<VerifyPropertyArgs<T>> {
     Call::new(
         MODULE,
-        calls::VERIFY_CLAIM,
-        VerifyClaimArgs { did_id, claim_id },
+        calls::VERIFY_ASSET_PROPERTY,
+        VerifyPropertyArgs {
+            asset_id,
+            property_id,
+        },
     )
 }
 
 pub fn remove_verification<T: AssetRegistry>(
-    did_id: <T as System>::Hash,
-    claim_id: <T as System>::Hash,
-) -> Call<VerifyClaimArgs<T>> {
+    asset_id: <T as System>::Hash,
+    property_id: <T as System>::Hash,
+) -> Call<VerifyPropertyArgs<T>> {
     Call::new(
         MODULE,
         calls::REMOVE_VERIFICATION,
-        VerifyClaimArgs { did_id, claim_id },
+        VerifyPropertyArgs {
+            asset_id,
+            property_id,
+        },
     )
 }

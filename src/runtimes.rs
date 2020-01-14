@@ -25,6 +25,7 @@ use sp_runtime::{
 };
 
 use crate::frame::{
+    asset_registry::AssetRegistry,
     balances::Balances,
     contracts::Contracts,
     identity::Identity,
@@ -57,3 +58,5 @@ impl Balances for DefaultNodeRuntime {
 impl Contracts for DefaultNodeRuntime {}
 
 impl Identity for DefaultNodeRuntime {}
+
+impl AssetRegistry for DefaultNodeRuntime {}
