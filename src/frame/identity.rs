@@ -144,27 +144,42 @@ pub fn create_claim<T: Identity>(
 pub struct VerifyClaimArgs<T: Identity> {
     did_id: <T as System>::Hash,
     claim_id: <T as System>::Hash,
+    issued: i64,
+    expiry: i64,
 }
 
 /// call the extrinsic.
 pub fn verify_claim<T: Identity>(
     did_id: <T as System>::Hash,
     claim_id: <T as System>::Hash,
+    issued: i64,
+    expiry: i64,
 ) -> Call<VerifyClaimArgs<T>> {
     Call::new(
         MODULE,
         calls::VERIFY_CLAIM,
-        VerifyClaimArgs { did_id, claim_id },
+        VerifyClaimArgs {
+            did_id,
+            claim_id,
+            issued,
+            expiry,
+        },
     )
+}
+
+#[derive(Encode)]
+pub struct RemoveVerificationArgs<T: Identity> {
+    did_id: <T as System>::Hash,
+    claim_id: <T as System>::Hash,
 }
 
 pub fn remove_verification<T: Identity>(
     did_id: <T as System>::Hash,
     claim_id: <T as System>::Hash,
-) -> Call<VerifyClaimArgs<T>> {
+) -> Call<RemoveVerificationArgs<T>> {
     Call::new(
         MODULE,
         calls::REMOVE_VERIFICATION,
-        VerifyClaimArgs { did_id, claim_id },
+        RemoveVerificationArgs { did_id, claim_id },
     )
 }
