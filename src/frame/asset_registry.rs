@@ -20,7 +20,6 @@ mod calls {
 /// events
 #[allow(unused)]
 pub mod events {
-    pub const EXTRINSIC_TEST: &str = "ExtrinsicTest";
     pub const CREATED: &str = "Created";
     pub const VERIFIED: &str = "Verified";
     pub const ADDED: &str = "Added";
@@ -137,12 +136,16 @@ pub fn create_asset_property<T: AssetRegistry>(
 pub struct VerifyPropertyArgs<T: AssetRegistry> {
     asset_id: <T as System>::Hash,
     property_id: <T as System>::Hash,
+    issued: i64,
+    expiry: i64,
 }
 
 /// call the extrinsic.
 pub fn verify_asset_property<T: AssetRegistry>(
     asset_id: <T as System>::Hash,
     property_id: <T as System>::Hash,
+    issued: i64,
+    expiry: i64,
 ) -> Call<VerifyPropertyArgs<T>> {
     Call::new(
         MODULE,
@@ -150,20 +153,44 @@ pub fn verify_asset_property<T: AssetRegistry>(
         VerifyPropertyArgs {
             asset_id,
             property_id,
+            issued,
+            expiry,
         },
     )
+}
+#[derive(Encode)]
+pub struct RemoveVerificationArgs<T: AssetRegistry> {
+    asset_id: <T as System>::Hash,
+    property_id: <T as System>::Hash,
 }
 
 pub fn remove_verification<T: AssetRegistry>(
     asset_id: <T as System>::Hash,
     property_id: <T as System>::Hash,
-) -> Call<VerifyPropertyArgs<T>> {
+) -> Call<RemoveVerificationArgs<T>> {
     Call::new(
         MODULE,
         calls::REMOVE_VERIFICATION,
-        VerifyPropertyArgs {
+        RemoveVerificationArgs {
             asset_id,
             property_id,
         },
+    )
+}
+
+#[derive(Encode)]
+pub struct AssetOwnerArgs<T: AssetRegistry> {
+    asset_id: <T as System>::Hash,
+    owner: <T as System>::AccountId,
+}
+
+pub fn asset_owner_addax<T: AssetRegistry>(
+    asset_id: <T as System>::Hash,
+    owner: <T as System>::AccountId,
+) -> Call<AssetOwnerArgs<T>> {
+    Call::new(
+        MODULE,
+        calls::REMOVE_VERIFICATION,
+        AssetOwnerArgs { asset_id, owner },
     )
 }
