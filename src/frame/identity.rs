@@ -14,6 +14,7 @@ mod calls {
     pub const CREATE_REGISTRY: &str = "create_registry";
     pub const ADD_KYC_PROVIDER: &str = "add_kycprovider";
     pub const CREATE_DID: &str = "create_did";
+    pub const CREATE_PROPERTY: &str = "create_property";
     pub const CREATE_CLAIM: &str = "create_claim";
     pub const VERIFY_CLAIM: &str = "verify_claim";
     pub const REMOVE_VERIFICATION: &str = "remove_verification";
@@ -28,7 +29,7 @@ pub mod events {
     pub const REMOVED: &str = "Removed";
 }
 #[derive(Debug, Encode, Clone, Eq, PartialEq)]
-pub enum ClaimDataType {
+pub enum DataType {
     Bool,
     String,
     U8,
@@ -36,14 +37,14 @@ pub enum ClaimDataType {
     U32,
     U128,
 }
-impl Default for ClaimDataType {
+impl Default for DataType {
     fn default() -> Self {
-        ClaimDataType::String
+        DataType::String
     }
 }
 #[derive(Debug, Encode, Clone, Eq, PartialEq, Default)]
-pub struct ClaimDataValue {
-    pub data_type: ClaimDataType,
+pub struct DataValue {
+    pub data_type: DataType,
     pub bool_value: Option<bool>,
     pub string_value: Option<Vec<u8>>,
     pub u8_value: Option<u8>,
@@ -108,13 +109,43 @@ pub fn create_did<T: Identity>(
 }
 /// Arguments for creating a registry
 #[derive(Encode)]
+pub struct CreatePropertyArgs<T: Identity> {
+    did_id: <T as System>::Hash,
+    created: i64,
+    name: Vec<u8>,
+    data_type: DataType,
+    value: DataValue,
+}
+
+/// call the extrinsic.
+pub fn create_property<T: Identity>(
+    did_id: <T as System>::Hash,
+    created: i64,
+    name: Vec<u8>,
+    data_type: DataType,
+    value: DataValue,
+) -> Call<CreatePropertyArgs<T>> {
+    Call::new(
+        MODULE,
+        calls::CREATE_PROPERTY,
+        CreatePropertyArgs {
+            did_id,
+            created,
+            name,
+            data_type,
+            value,
+        },
+    )
+}
+/// Arguments for creating a registry
+#[derive(Encode)]
 pub struct CreateClaimArgs<T: Identity> {
     did_id: <T as System>::Hash,
     issued: i64,
     expiry: i64,
     assertion: Vec<u8>,
-    data_type: ClaimDataType,
-    value: ClaimDataValue,
+    data_type: DataType,
+    value: DataValue,
 }
 
 /// call the extrinsic.
@@ -123,8 +154,8 @@ pub fn create_claim<T: Identity>(
     issued: i64,
     expiry: i64,
     assertion: Vec<u8>,
-    data_type: ClaimDataType,
-    value: ClaimDataValue,
+    data_type: DataType,
+    value: DataValue,
 ) -> Call<CreateClaimArgs<T>> {
     Call::new(
         MODULE,
