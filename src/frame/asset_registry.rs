@@ -27,7 +27,7 @@ pub mod events {
     pub const TRANSFERED: &str = "Transfered";
 }
 #[derive(Debug, Encode, Clone, Eq, PartialEq)]
-pub enum PropertyDataType {
+pub enum DataType {
     Bool,
     String,
     U8,
@@ -35,14 +35,14 @@ pub enum PropertyDataType {
     U32,
     U128,
 }
-impl Default for PropertyDataType {
+impl Default for DataType {
     fn default() -> Self {
-        PropertyDataType::String
+        DataType::String
     }
 }
 #[derive(Debug, Encode, Clone, Eq, PartialEq, Default)]
-pub struct PropertyDataValue {
-    pub data_type: PropertyDataType,
+pub struct DataValue {
+    pub data_type: DataType,
     pub bool_value: Option<bool>,
     pub string_value: Option<Vec<u8>>,
     pub u8_value: Option<u8>,
@@ -105,8 +105,8 @@ pub struct CreatePropertyArgs<T: AssetRegistry> {
     issued: i64,
     expiry: i64,
     assertion: Vec<u8>,
-    data_type: PropertyDataType,
-    value: PropertyDataValue,
+    data_type: DataType,
+    value: DataValue,
 }
 
 /// call the extrinsic.
@@ -115,8 +115,8 @@ pub fn create_asset_property<T: AssetRegistry>(
     issued: i64,
     expiry: i64,
     assertion: Vec<u8>,
-    data_type: PropertyDataType,
-    value: PropertyDataValue,
+    data_type: DataType,
+    value: DataValue,
 ) -> Call<CreatePropertyArgs<T>> {
     Call::new(
         MODULE,
