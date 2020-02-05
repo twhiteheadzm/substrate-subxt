@@ -11,7 +11,7 @@ pub const MODULE: &str = "Identity";
 pub trait Identity: System {}
 mod calls {
     pub const TEST_EXTRINSIC: &str = "test_extrinsic";
-    pub const CREATE_REGISTRY: &str = "create_registry";
+    pub const CREATE_CATALOG: &str = "create_catalog";
     pub const ADD_KYC_PROVIDER: &str = "add_kycprovider";
     pub const CREATE_DID: &str = "create_did";
     pub const CREATE_PROPERTY: &str = "create_property";
@@ -62,52 +62,52 @@ pub fn test_extrinsic() -> Call<EmptyArgs> {
 }
 
 /// call the extrinsic.
-pub fn create_registry() -> Call<EmptyArgs> {
-    Call::new(MODULE, calls::CREATE_REGISTRY, EmptyArgs {})
+pub fn create_catalog() -> Call<EmptyArgs> {
+    Call::new(MODULE, calls::CREATE_CATALOG, EmptyArgs {})
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct AddKycproviderArgs<T: Identity> {
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     kycprovider: <T as System>::AccountId,
 }
 
 /// call the extrinsic.
 pub fn add_kycprovider<T: Identity>(
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     kycprovider: <T as System>::AccountId,
 ) -> Call<AddKycproviderArgs<T>> {
     Call::new(
         MODULE,
         calls::ADD_KYC_PROVIDER,
         AddKycproviderArgs {
-            registry_id,
+            catalog_id,
             kycprovider,
         },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct CreateDidArgs<T: Identity> {
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     referent: <T as System>::AccountId,
 }
 
 /// call the extrinsic.
 pub fn create_did<T: Identity>(
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     referent: <T as System>::AccountId,
 ) -> Call<CreateDidArgs<T>> {
     Call::new(
         MODULE,
         calls::CREATE_DID,
         CreateDidArgs {
-            registry_id,
+            catalog_id,
             referent,
         },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct CreatePropertyArgs<T: Identity> {
     did_id: <T as System>::Hash,
@@ -137,7 +137,7 @@ pub fn create_property<T: Identity>(
         },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct CreateClaimArgs<T: Identity> {
     did_id: <T as System>::Hash,
@@ -170,7 +170,7 @@ pub fn create_claim<T: Identity>(
         },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct VerifyClaimArgs<T: Identity> {
     did_id: <T as System>::Hash,
