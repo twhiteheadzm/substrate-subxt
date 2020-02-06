@@ -12,8 +12,8 @@ pub trait Identity: System {}
 mod calls {
     pub const TEST_EXTRINSIC: &str = "test_extrinsic";
     pub const CREATE_CATALOG: &str = "create_catalog";
-    pub const ADD_KYC_PROVIDER: &str = "add_kycprovider";
     pub const CREATE_DID: &str = "create_did";
+    pub const ADD_DID: &str = "add_did";
     pub const CREATE_PROPERTY: &str = "create_property";
     pub const CREATE_CLAIM: &str = "create_claim";
     pub const VERIFY_CLAIM: &str = "verify_claim";
@@ -53,7 +53,6 @@ pub struct DataValue {
     pub u128_value: Option<u128>,
 }
 
-/// Arguments extrinsic that does not need args
 #[derive(Encode)]
 pub struct EmptyArgs {}
 
@@ -61,41 +60,18 @@ pub fn test_extrinsic() -> Call<EmptyArgs> {
     Call::new(MODULE, calls::TEST_EXTRINSIC, EmptyArgs {})
 }
 
-/// call the extrinsic.
 pub fn create_catalog() -> Call<EmptyArgs> {
     Call::new(MODULE, calls::CREATE_CATALOG, EmptyArgs {})
 }
-/// Arguments for creating a catalog
-#[derive(Encode)]
-pub struct AddKycproviderArgs<T: Identity> {
-    catalog_id: <T as System>::Hash,
-    kycprovider: <T as System>::AccountId,
-}
 
-/// call the extrinsic.
-pub fn add_kycprovider<T: Identity>(
-    catalog_id: <T as System>::Hash,
-    kycprovider: <T as System>::AccountId,
-) -> Call<AddKycproviderArgs<T>> {
-    Call::new(
-        MODULE,
-        calls::ADD_KYC_PROVIDER,
-        AddKycproviderArgs {
-            catalog_id,
-            kycprovider,
-        },
-    )
-}
-/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct CreateDidArgs<T: Identity> {
-    catalog_id: <T as System>::Hash,
+    catalog_id: Option<<T as System>::Hash>,
     referent: <T as System>::AccountId,
 }
 
-/// call the extrinsic.
 pub fn create_did<T: Identity>(
-    catalog_id: <T as System>::Hash,
+    catalog_id: Option<<T as System>::Hash>,
     referent: <T as System>::AccountId,
 ) -> Call<CreateDidArgs<T>> {
     Call::new(
@@ -107,7 +83,19 @@ pub fn create_did<T: Identity>(
         },
     )
 }
-/// Arguments for creating a catalog
+
+#[derive(Encode)]
+pub struct AddDidArgs<T: Identity> {
+    catalog_id: <T as System>::Hash,
+    name: Vec<u8>,
+}
+
+pub fn add_did<T: Identity>(
+    catalog_id: <T as System>::Hash,
+    name: Vec<u8>,
+) -> Call<AddDidArgs<T>> {
+    Call::new(MODULE, calls::ADD_DID, AddDidArgs { catalog_id, name })
+}
 #[derive(Encode)]
 pub struct CreatePropertyArgs<T: Identity> {
     did_id: <T as System>::Hash,
@@ -117,7 +105,6 @@ pub struct CreatePropertyArgs<T: Identity> {
     value: DataValue,
 }
 
-/// call the extrinsic.
 pub fn create_property<T: Identity>(
     did_id: <T as System>::Hash,
     created: i64,
@@ -137,7 +124,7 @@ pub fn create_property<T: Identity>(
         },
     )
 }
-/// Arguments for creating a catalog
+
 #[derive(Encode)]
 pub struct CreateClaimArgs<T: Identity> {
     did_id: <T as System>::Hash,
@@ -148,7 +135,6 @@ pub struct CreateClaimArgs<T: Identity> {
     value: DataValue,
 }
 
-/// call the extrinsic.
 pub fn create_claim<T: Identity>(
     did_id: <T as System>::Hash,
     issued: i64,
@@ -170,7 +156,7 @@ pub fn create_claim<T: Identity>(
         },
     )
 }
-/// Arguments for creating a catalog
+
 #[derive(Encode)]
 pub struct VerifyClaimArgs<T: Identity> {
     did_id: <T as System>::Hash,
@@ -179,7 +165,6 @@ pub struct VerifyClaimArgs<T: Identity> {
     expiry: i64,
 }
 
-/// call the extrinsic.
 pub fn verify_claim<T: Identity>(
     did_id: <T as System>::Hash,
     claim_id: <T as System>::Hash,
