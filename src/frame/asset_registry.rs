@@ -10,7 +10,7 @@ pub const MODULE: &str = "AssetRegistry";
 
 pub trait AssetRegistry: System {}
 mod calls {
-    pub const CREATE_REGISTRY: &str = "create_registry";
+    pub const CREATE_REGISTRY: &str = "create_catalog";
     pub const ADD_KYC_PROVIDER: &str = "add_kycprovider";
     pub const CREATE_ASSET: &str = "create_asset";
     pub const CREATE_ASSET_PROPERTY: &str = "create_asset_property";
@@ -56,49 +56,55 @@ pub struct DataValue {
 pub struct EmptyArgs {}
 
 /// call the extrinsic.
-pub fn create_registry() -> Call<EmptyArgs> {
+pub fn create_catalog() -> Call<EmptyArgs> {
     Call::new(MODULE, calls::CREATE_REGISTRY, EmptyArgs {})
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct AddKycproviderArgs<T: AssetRegistry> {
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     kycprovider: <T as System>::AccountId,
 }
 
 /// call the extrinsic.
 pub fn add_kycprovider<T: AssetRegistry>(
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     kycprovider: <T as System>::AccountId,
 ) -> Call<AddKycproviderArgs<T>> {
     Call::new(
         MODULE,
         calls::ADD_KYC_PROVIDER,
         AddKycproviderArgs {
-            registry_id,
+            catalog_id,
             kycprovider,
         },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct CreateDidArgs<T: AssetRegistry> {
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     owner: <T as System>::AccountId,
+    /* owners: Vec<FractionalOwner>,
+     * balance: u32,
+     * change_feed: ChangeFeed, */
 }
 
 /// call the extrinsic.
 pub fn create_asset<T: AssetRegistry>(
-    registry_id: <T as System>::Hash,
+    catalog_id: <T as System>::Hash,
     owner: <T as System>::AccountId,
+    /* owners: Vec<FractionalOwner>,
+     * balance: u32,
+     * change_feed: ChangeFeed, */
 ) -> Call<CreateDidArgs<T>> {
     Call::new(
         MODULE,
         calls::CREATE_ASSET,
-        CreateDidArgs { registry_id, owner },
+        CreateDidArgs { catalog_id, owner },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct CreatePropertyArgs<T: AssetRegistry> {
     asset_id: <T as System>::Hash,
@@ -131,7 +137,7 @@ pub fn create_asset_property<T: AssetRegistry>(
         },
     )
 }
-/// Arguments for creating a registry
+/// Arguments for creating a catalog
 #[derive(Encode)]
 pub struct VerifyPropertyArgs<T: AssetRegistry> {
     asset_id: <T as System>::Hash,
