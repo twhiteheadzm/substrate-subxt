@@ -67,19 +67,22 @@ pub fn create_catalog() -> Call<EmptyArgs> {
 #[derive(Encode)]
 pub struct CreateDidArgs<T: Identity> {
     catalog_id: Option<<T as System>::Hash>,
-    referent: <T as System>::AccountId,
+    name: Vec<u8>,
+    subject: <T as System>::AccountId,
 }
 
 pub fn create_did<T: Identity>(
     catalog_id: Option<<T as System>::Hash>,
-    referent: <T as System>::AccountId,
+    name: Vec<u8>,
+    subject: <T as System>::AccountId,
 ) -> Call<CreateDidArgs<T>> {
     Call::new(
         MODULE,
         calls::CREATE_DID,
         CreateDidArgs {
             catalog_id,
-            referent,
+            name,
+            subject,
         },
     )
 }
