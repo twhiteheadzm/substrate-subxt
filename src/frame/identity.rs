@@ -90,14 +90,24 @@ pub fn create_did<T: Identity>(
 #[derive(Encode)]
 pub struct AddDidArgs<T: Identity> {
     catalog_id: <T as System>::Hash,
+    did: <T as System>::Hash,
     name: Vec<u8>,
 }
 
 pub fn add_did<T: Identity>(
     catalog_id: <T as System>::Hash,
+    did: <T as System>::Hash,
     name: Vec<u8>,
 ) -> Call<AddDidArgs<T>> {
-    Call::new(MODULE, calls::ADD_DID, AddDidArgs { catalog_id, name })
+    Call::new(
+        MODULE,
+        calls::ADD_DID,
+        AddDidArgs {
+            catalog_id,
+            did,
+            name,
+        },
+    )
 }
 #[derive(Encode)]
 pub struct CreatePropertyArgs<T: Identity> {
