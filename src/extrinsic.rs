@@ -68,6 +68,7 @@ where
     type AdditionalSigned = u32;
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "CheckVersion";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -98,6 +99,7 @@ where
     type AdditionalSigned = T::Hash;
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "CheckGenesis";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -130,6 +132,7 @@ where
     type AdditionalSigned = T::Hash;
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "CheckEra";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -150,6 +153,7 @@ where
     type AdditionalSigned = ();
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "CheckNonce";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -170,6 +174,7 @@ where
     type AdditionalSigned = ();
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "CheckWeight";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -191,6 +196,7 @@ where
     type AdditionalSigned = ();
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "ChargeTransactionPayment";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -211,6 +217,7 @@ where
     type AdditionalSigned = ();
     type Pre = ();
     type DispatchInfo = ();
+    const IDENTIFIER: &'static str = "CheckBlockGasLimit";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {
@@ -272,7 +279,7 @@ impl<T: System + Balances + Send + Sync> SignedExtension for DefaultExtra<T> {
         <<Self as SignedExtra<T>>::Extra as SignedExtension>::AdditionalSigned;
     type Pre = ();
     type DispatchInfo = ();
-
+    const IDENTIFIER: &'static str = "SignedExtension";
     fn additional_signed(
         &self,
     ) -> Result<Self::AdditionalSigned, TransactionValidityError> {

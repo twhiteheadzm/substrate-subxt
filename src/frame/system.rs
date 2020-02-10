@@ -86,7 +86,8 @@ pub trait System: 'static + Eq + Clone + Debug {
         + CheckEqual
         + std::hash::Hash
         + AsRef<[u8]>
-        + AsMut<[u8]>;
+        + AsMut<[u8]>
+        + Ord;
 
     /// The hashing system (algorithm) being used in the runtime (e.g. Blake2).
     type Hashing: Hash<Output = Self::Hash>;
