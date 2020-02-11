@@ -111,6 +111,11 @@ impl<T: System + Balances + 'static> TryFrom<Metadata> for EventsDecoder<T> {
         decoder.register_type_size::<<T as Balances>::Balance>("Balance")?;
         // VoteThreshold enum index
         decoder.register_type_size::<u8>("VoteThreshold")?;
+        // identity
+        decoder.register_type_size::<[u8; 32]>("CatalogId")?;
+        decoder.register_type_size::<[u8; 32]>("H256")?;
+        decoder.register_type_size::<[u8; 32]>("Did")?;
+        decoder.register_type_size::<i64>("i64")?;
 
         Ok(decoder)
     }
@@ -140,7 +145,12 @@ impl<T: System + Balances + 'static> EventsDecoder<T> {
                             && !self.type_sizes.contains_key(&primitive)
                             && !primitive.contains("PhantomData")
                         {
-                            missing.insert(format!("{}::{}::{}", module.name(), event.name, primitive));
+                            missing.insert(format!(
+                                "{}::{}::{}",
+                                module.name(),
+                                event.name,
+                                primitive
+                            ));
                         }
                     }
                 }
