@@ -111,11 +111,6 @@ impl<T: System + Balances + 'static> TryFrom<Metadata> for EventsDecoder<T> {
         decoder.register_type_size::<<T as Balances>::Balance>("Balance")?;
         // VoteThreshold enum index
         decoder.register_type_size::<u8>("VoteThreshold")?;
-        // identity
-        decoder.register_type_size::<[u8; 32]>("CatalogId")?;
-        decoder.register_type_size::<[u8; 32]>("H256")?;
-        decoder.register_type_size::<[u8; 32]>("Did")?;
-        decoder.register_type_size::<i64>("i64")?;
 
         Ok(decoder)
     }
@@ -210,14 +205,14 @@ impl<T: System + Balances + 'static> EventsDecoder<T> {
         for _ in 0..len {
             // decode EventRecord
             let phase = Phase::decode(input)?;
-            let module_variant = input.read_byte()? as u8;
+            let module_variant = input.read_byte()?;
 
             let module = self.metadata.module_with_events(module_variant)?;
             let event = if module.name() == "System" {
                 let system_event = SystemEvent::decode(input)?;
                 RuntimeEvent::System(system_event)
             } else {
-                let event_variant = input.read_byte()? as u8;
+                let event_variant = input.read_byte()?;
                 let event_metadata = module.event(event_variant)?;
 
                 let mut event_data = Vec::<u8>::new();
