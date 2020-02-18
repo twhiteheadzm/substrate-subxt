@@ -1,10 +1,10 @@
+use crate::frame::utils::StringUtils;
 use codec::{
     Decode,
     Encode,
 };
-// use sp_core::H256;
 // use sp_io;
-// use sp_runtime::traits::Hash;
+
 // use sp_runtime::traits::Printable;
 use sp_runtime::RuntimeDebug;
 
@@ -27,23 +27,12 @@ pub struct Did {
 //     }
 // }
 
-// impl From<[u8; UUID_LEN]> for DID {
-//     fn from(hash: [u8; UUID_LEN]) -> Self {
-//         DID(hash)
-//     }
-// }
-
-// impl From<H256> for DID {
-//     fn from(hash: H256) -> Self {
-//         DID(hash.into())
-//     }
-// }
-
-// impl From<&Vec<u8>> for DID {
-//     fn from(string_did: &Vec<u8>) -> Self {
-//         let mut array = [0; UUID_LEN];
-//         let bytes = &string_did[8..array.len()]; // panics if not enough data
-//         array.copy_from_slice(bytes);
-//         DID(array)
-//     }
-// }
+impl From<&str> for Did {
+    fn from(str: &str) -> Self {
+        let mut array: [u8; 32] = Default::default();
+        let hex_only = str.substring(2, 64);
+        let bytes: &[u8] = &hex::decode(hex_only).unwrap();
+        array.copy_from_slice(&bytes[0..32]);
+        Did { id: array }
+    }
+}
