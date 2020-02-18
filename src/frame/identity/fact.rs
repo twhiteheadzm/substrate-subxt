@@ -1,7 +1,8 @@
 use codec::{Decode, Encode};
 use frame_support::dispatch::Vec;
+use sp_runtime::RuntimeDebug;
 
-#[derive(Debug, Encode, Decode, PartialOrd, Ord, PartialEq, Eq, Clone)]
+#[derive(Encode, Decode, PartialOrd, Ord, PartialEq, Eq, Clone, RuntimeDebug)]
 pub enum Fact {
     /// true or false
     Bool(bool),

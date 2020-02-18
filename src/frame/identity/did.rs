@@ -2,18 +2,20 @@ use codec::{
     Decode,
     Encode,
 };
-use sp_core::H256;
+// use sp_core::H256;
 // use sp_io;
 // use sp_runtime::traits::Hash;
 // use sp_runtime::traits::Printable;
-// use sp_std::prelude::*;
+use sp_runtime::RuntimeDebug;
 
 /// Borlaug DID.
 /// DID is of the format: "did:bws:<32 Hex characters>".
 ///
 /// A simple example of a Borlaug decentralized identifier (DID)
 /// did:bws:123456789abcdefghi
-#[derive(Encode, Decode, Default, PartialOrd, Ord, PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(
+    Encode, Decode, Default, PartialOrd, Ord, PartialEq, Eq, Clone, Copy, RuntimeDebug,
+)]
 pub struct Did {
     pub id: [u8; 32],
 }
@@ -25,17 +27,17 @@ pub struct Did {
 //     }
 // }
 
-impl From<[u8; 32]> for Did {
-    fn from(hash: [u8; 32]) -> Self {
-        Did { id: hash }
-    }
-}
+// impl From<[u8; UUID_LEN]> for DID {
+//     fn from(hash: [u8; UUID_LEN]) -> Self {
+//         DID(hash)
+//     }
+// }
 
-impl From<H256> for Did {
-    fn from(hash: H256) -> Self {
-        Did { id: hash.into() }
-    }
-}
+// impl From<H256> for DID {
+//     fn from(hash: H256) -> Self {
+//         DID(hash.into())
+//     }
+// }
 
 // impl From<&Vec<u8>> for DID {
 //     fn from(string_did: &Vec<u8>) -> Self {

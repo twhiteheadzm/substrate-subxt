@@ -1,4 +1,5 @@
 //! Implements support for the identity module.
+pub mod attestation;
 pub mod claim;
 pub mod did;
 pub mod did_property;
@@ -7,10 +8,12 @@ use crate::frame::{
     system::System,
     Call,
 };
+use attestation::Attestation;
 use claim::Statement;
 use codec::Encode;
 use did::Did;
 use did_property::DidProperty;
+use fact::Fact;
 use sp_core::H256;
 
 /// Module name
@@ -149,15 +152,15 @@ pub fn authorize_claim_verifier(
 
 #[derive(Encode)]
 pub struct MakeClaimArgs {
-    target_did: Did,
     claim_consumer: Did,
+    target_did: Did,
     description: Vec<u8>,
     statements: Vec<Statement>,
 }
 
 pub fn make_claim(
-    target_did: Did,
     claim_consumer: Did,
+    target_did: Did,
     description: Vec<u8>,
     statements: Vec<Statement>,
 ) -> Call<MakeClaimArgs> {
@@ -165,8 +168,8 @@ pub fn make_claim(
         MODULE,
         calls::MAKE_CLAIM,
         MakeClaimArgs {
-            target_did,
             claim_consumer,
+            target_did,
             description,
             statements,
         },
@@ -175,29 +178,29 @@ pub fn make_claim(
 
 #[derive(Encode)]
 pub struct AttestClaimArgs {
-    target_did: Did,
     claim_verifier: Did,
-    claim_id: i64,
+    target_did: Did,
+    claim_id: u64,
     statements: Vec<Statement>,
-    expiry: i64,
+    valid_until: u64,
 }
 
 pub fn attest_claim(
-    target_did: Did,
     claim_verifier: Did,
-    claim_id: i64,
+    target_did: Did,
+    claim_id: u64,
     statements: Vec<Statement>,
-    expiry: i64,
+    valid_until: u64,
 ) -> Call<AttestClaimArgs> {
     Call::new(
         MODULE,
         calls::ATTEST_CLAIM,
         AttestClaimArgs {
-            target_did,
             claim_verifier,
+            target_did,
             claim_id,
             statements,
-            expiry,
+            valid_until,
         },
     )
 }
@@ -205,10 +208,10 @@ pub fn attest_claim(
 #[derive(Encode)]
 pub struct RevokeClaimArgs {
     claim_verifier: Did,
-    claim_id: i64,
+    claim_id: u64,
 }
 
-pub fn revoke_claim(claim_verifier: Did, claim_id: i64) -> Call<RevokeClaimArgs> {
+pub fn revoke_claim(claim_verifier: Did, claim_id: u64) -> Call<RevokeClaimArgs> {
     Call::new(
         MODULE,
         calls::REVOKE_CLAIM,

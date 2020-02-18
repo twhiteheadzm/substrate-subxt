@@ -596,49 +596,4 @@ mod tests {
 
         assert!(result.is_ok())
     }
-
-    #[test]
-    #[ignore] // requires locally running substrate node
-    fn test_chain_read_metadata() {
-        let client = async_std::task::block_on(test_client());
-
-        let balances = client.metadata().module_with_calls("Balances").unwrap();
-        let dest = sp_keyring::AccountKeyring::Bob.to_account_id();
-        let address: Address = dest.clone().into();
-        let amount: Balance = 10_000;
-
-        let transfer = pallet_balances::Call::transfer(address.clone(), amount);
-        let call = node_runtime::Call::Balances(transfer);
-        let subxt_transfer = crate::frame::balances::transfer::<Runtime>(address, amount);
-        let call2 = balances.call("transfer", subxt_transfer.args).unwrap();
-        assert_eq!(call.encode().to_vec(), call2.0);
-
-        let free_balance =
-            <pallet_balances::FreeBalance<node_runtime::Runtime>>::hashed_key_for(&dest);
-        let free_balance_key = StorageKey(free_balance);
-        let free_balance_key2 = client
-            .metadata()
-            .module("Balances")
-            .unwrap()
-            .storage("FreeBalance")
-            .unwrap()
-            .get_map::<AccountId, Balance>()
-            .unwrap()
-            .key(dest.clone());
-        assert_eq!(free_balance_key, free_balance_key2);
-
-        let account_nonce =
-            <frame_system::AccountNonce<node_runtime::Runtime>>::hashed_key_for(&dest);
-        let account_nonce_key = StorageKey(account_nonce);
-        let account_nonce_key2 = client
-            .metadata()
-            .module("System")
-            .unwrap()
-            .storage("AccountNonce")
-            .unwrap()
-            .get_map::<AccountId, Index>()
-            .unwrap()
-            .key(dest);
-        assert_eq!(account_nonce_key, account_nonce_key2);
-    }
 }
