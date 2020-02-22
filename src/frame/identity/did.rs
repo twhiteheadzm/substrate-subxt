@@ -36,3 +36,13 @@ impl From<&str> for Did {
         Did { id: array }
     }
 }
+
+impl From<String> for Did {
+    fn from(str: String) -> Self {
+        let mut array: [u8; 32] = Default::default();
+        let hex_only = str.substring(2, 64);
+        let bytes: &[u8] = &hex::decode(hex_only).unwrap();
+        array.copy_from_slice(&bytes[0..32]);
+        Did { id: array }
+    }
+}

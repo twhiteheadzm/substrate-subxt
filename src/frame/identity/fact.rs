@@ -1,8 +1,26 @@
-use codec::{Decode, Encode};
+use codec::{
+    Decode,
+    Encode,
+};
 use frame_support::dispatch::Vec;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use sp_runtime::RuntimeDebug;
 
-#[derive(Encode, Decode, PartialOrd, Ord, PartialEq, Eq, Clone, RuntimeDebug)]
+#[derive(
+    Encode,
+    Decode,
+    PartialOrd,
+    Ord,
+    PartialEq,
+    Eq,
+    Clone,
+    RuntimeDebug,
+    Serialize,
+    Deserialize,
+)]
 pub enum Fact {
     /// true or false
     Bool(bool),

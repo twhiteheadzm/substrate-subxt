@@ -4,6 +4,7 @@ pub mod claim;
 pub mod did;
 pub mod did_property;
 pub mod fact;
+
 use crate::frame::{
     system::System,
     Call,
@@ -14,12 +15,13 @@ use codec::Encode;
 use did::Did;
 use did_property::DidProperty;
 use fact::Fact;
-use sp_core::H256;
+use std::convert::TryFrom;
 
 /// Module name
 pub const MODULE: &str = "Identity";
 
-pub type CatalogId = H256;
+pub type CatalogId = u32;
+pub struct AddaxTimestamp(u64);
 
 pub trait Identity: System {}
 mod calls {
@@ -27,12 +29,16 @@ mod calls {
     pub const REGISTER_DID_FOR: &str = "register_did_for";
     pub const REGISTER_DID_CATALOG: &str = "register_did_catalog";
     pub const ADD_DID_PROPERTIES: &str = "add_did_properties";
+    pub const PATCH_DID_PROPERTIES: &str = "patch_did_properties";
+    pub const UPDATE_DID_PROPERTIES: &str = "update_did_properties";
+    pub const UPDATE_DID_CONTROLLERS: &str = "update_did_controllers";
     pub const AUTHORIZE_CLAIM_CONSUMER: &str = "authorize_claim_consumer";
     pub const AUTHORIZE_CLAIM_VERIFIER: &str = "authorize_claim_verifier";
     pub const MAKE_CLAIM: &str = "make_claim";
     pub const ATTEST_CLAIM: &str = "attest_claim";
     pub const REVOKE_CLAIM: &str = "revoke_claim";
     pub const CREATE_CATALOG: &str = "create_catalog";
+    pub const DELETE_CATALOG: &str = "delete_catalog";
     pub const CATALOG_ADD_DID: &str = "catalog_add_did";
 }
 /// events
@@ -40,13 +46,19 @@ mod calls {
 pub mod events {
     pub const REGISTERED: &str = "Registered";
     pub const PROPERTIES_ADDED: &str = "PropertiesAdded";
-    pub const CLAIM_CONSUMER_ADDED: &str = "ClaimConsumerAdded";
-    pub const CLAIM_VERIFIER_ADDED: &str = "ClaimVerifierAdded";
+    pub const PROPERTIES_UPDATED: &str = "PropertiesUpdated";
+    pub const PROPERTIES_REPLACED: &str = "PropertiesReplaced";
+    pub const DID_CONTROLLERS_UPDATED: &str = "ControllersUpdated";
+    pub const CLAIM_CONSUMERS_ADDED: &str = "ClaimConsumersAdded";
+    pub const CLAIM_ISSUERS_ADDED: &str = "ClaimIssuersAdded";
+    pub const CLAIM_CONSUMERS_REVOKED: &str = "ClaimConsumersRevoked";
+    pub const CLAIM_ISSUERS_REVOKED: &str = "ClaimIssuersRevoked";
     pub const CLAIM_MADE: &str = "ClaimMade";
     pub const CLAIM_ATTESTED: &str = "ClaimAttested";
-    pub const CLAIM_REVOKED: &str = "ClaimRevoked";
+    pub const ATTESTATION_REVOKED: &str = "AttestationRevoked";
     pub const CREATED_CATALOG: &str = "CreatedCatalog";
-    pub const ADD_TO_CATALOG: &str = "AddToCatalog";
+    pub const DELETED_CATALOG: &str = "DeletedCatalog";
+    pub const CATALOG_ADDED_DIDS: &str = "CatalogAddedDids";
 }
 
 #[derive(Encode)]
@@ -109,7 +121,59 @@ pub fn add_did_properties(
         AddDidPropertiesArgs { did, properties },
     )
 }
+#[derive(Encode)]
+pub struct PatchDidPropertiesArgs {
+    did: Did,
+    properties: Vec<DidProperty>,
+}
 
+pub fn patch_did_properties(
+    did: Did,
+    properties: Vec<DidProperty>,
+) -> Call<PatchDidPropertiesArgs> {
+    Call::new(
+        MODULE,
+        calls::PATCH_DID_PROPERTIES,
+        PatchDidPropertiesArgs { did, properties },
+    )
+}
+#[derive(Encode)]
+pub struct UpdateDidPropertiesArgs {
+    did: Did,
+    add: Vec<DidProperty>,
+    remove: Vec<DidProperty>,
+}
+
+pub fn update_did_properties(
+    did: Did,
+    add: Vec<DidProperty>,
+    remove: Vec<DidProperty>,
+) -> Call<UpdateDidPropertiesArgs> {
+    Call::new(
+        MODULE,
+        calls::UPDATE_DID_PROPERTIES,
+        UpdateDidPropertiesArgs { did, add, remove },
+    )
+}
+
+#[derive(Encode)]
+pub struct UpdateDidControllersArgs {
+    did: Did,
+    add: Option<Vec<Vec<u8>>>,
+    remove: Option<Vec<Vec<u8>>>,
+}
+
+pub fn update_did_controllers(
+    did: Did,
+    add: Option<Vec<Vec<u8>>>,
+    remove: Option<Vec<Vec<u8>>>,
+) -> Call<UpdateDidControllersArgs> {
+    Call::new(
+        MODULE,
+        calls::UPDATE_DID_CONTROLLERS,
+        UpdateDidControllersArgs { did, add, remove },
+    )
+}
 #[derive(Encode)]
 pub struct AuthorizeClaimConsumerArgs {
     target_did: Did,
@@ -190,7 +254,7 @@ pub fn attest_claim(
     target_did: Did,
     claim_id: u64,
     statements: Vec<Statement>,
-    valid_until: u64,
+    valid_until: AddaxTimestamp,
 ) -> Call<AttestClaimArgs> {
     Call::new(
         MODULE,
@@ -200,7 +264,7 @@ pub fn attest_claim(
             target_did,
             claim_id,
             statements,
-            valid_until,
+            valid_until: valid_until.0,
         },
     )
 }
@@ -224,11 +288,24 @@ pub fn revoke_claim(claim_verifier: Did, claim_id: u64) -> Call<RevokeClaimArgs>
 
 #[derive(Encode)]
 pub struct CreateCatalogArgs {
-    name: Vec<u8>,
+    owner: Did,
 }
 
-pub fn create_catalog(name: Vec<u8>) -> Call<CreateCatalogArgs> {
-    Call::new(MODULE, calls::CREATE_CATALOG, CreateCatalogArgs { name })
+pub fn create_catalog(owner: Did) -> Call<CreateCatalogArgs> {
+    Call::new(MODULE, calls::CREATE_CATALOG, CreateCatalogArgs { owner })
+}
+
+#[derive(Encode)]
+pub struct DeleteCatalogArgs {
+    catalog_id: CatalogId,
+}
+
+pub fn delete_catalog(catalog_id: CatalogId) -> Call<DeleteCatalogArgs> {
+    Call::new(
+        MODULE,
+        calls::DELETE_CATALOG,
+        DeleteCatalogArgs { catalog_id },
+    )
 }
 
 #[derive(Encode)]
@@ -252,4 +329,15 @@ pub fn catalog_add_did(
             name,
         },
     )
+}
+
+impl From<i64> for AddaxTimestamp {
+    fn from(timestamp: i64) -> Self {
+        AddaxTimestamp(u64::try_from(timestamp).unwrap())
+    }
+}
+impl Into<i64> for AddaxTimestamp {
+    fn into(self) -> i64 {
+        i64::try_from(self.0).unwrap()
+    }
 }
