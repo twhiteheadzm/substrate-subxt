@@ -15,7 +15,6 @@ use codec::Encode;
 use did::Did;
 use did_property::DidProperty;
 use fact::Fact;
-use std::convert::TryFrom;
 
 /// Module name
 pub const MODULE: &str = "Identity";
@@ -32,6 +31,7 @@ mod calls {
     pub const REGISTER_DID_FOR: &str = "register_did_for";
     pub const UPDATE_DID: &str = "update_did";
     pub const REPLACE_DID: &str = "replace_did";
+    pub const UPDATE_DID_CONTROLLERS: &str = "update_did_controllers";
 
     pub const AUTHORIZE_CLAIM_CONSUMERS: &str = "authorize_claim_consumers";
     pub const REVOKE_CLAIM_CONSUMERS: &str = "revoke_claim_consumers";
@@ -46,6 +46,7 @@ mod calls {
     pub const CREATE_CATALOG: &str = "create_catalog";
     pub const REMOVE_CATALOG: &str = "remove_catalog";
     pub const ADD_DIDS_TO_CATALOG: &str = "add_dids_to_catalog";
+    pub const REMOVE_DIDS_FROM_CATALOG: &str = "remove_dids_from_catalog";
 }
 /// events
 #[allow(unused)]
@@ -53,6 +54,7 @@ pub mod events {
     pub const REGISTERED: &str = "Registered";
     pub const DID_UPDATED: &str = "DidUpdated";
     pub const DID_REPLACED: &str = "DidReplaced";
+    pub const DID_CONTROLLERS_UPDATED: &str = "DidControllersUpdated";
 
     pub const CLAIM_CONSUMERS_ADDED: &str = "ClaimConsumersAdded";
     pub const CLAIM_CONSUMERS_REMOVED: &str = "ClaimConsumersRemoved";
@@ -67,6 +69,7 @@ pub mod events {
     pub const CATALOG_CREATED: &str = "CatalogCreated";
     pub const CATALOG_REMOVED: &str = "CatalogRemoved";
     pub const CATALOG_DIDS_ADDED: &str = "CatalogDidsAdded";
+    pub const CATALOG_DIDS_REMOVED: &str = "CatalogDidsRemoved";
 }
 
 #[derive(Encode)]
@@ -136,14 +139,32 @@ pub fn replace_did(
     )
 }
 #[derive(Encode)]
+pub struct UpdateDidControllersArgs<T: Identity> {
+    did: Did,
+    add: Option<Vec<<T as System>::AccountId>>,
+    remove: Option<Vec<<T as System>::AccountId>>,
+}
+
+pub fn update_did_controllers<T: Identity>(
+    did: Did,
+    add: Option<Vec<<T as System>::AccountId>>,
+    remove: Option<Vec<<T as System>::AccountId>>,
+) -> Call<UpdateDidControllersArgs<T>> {
+    Call::new(
+        MODULE,
+        calls::UPDATE_DID_CONTROLLERS,
+        UpdateDidControllersArgs { did, add, remove },
+    )
+}
+#[derive(Encode)]
 pub struct AuthorizeClaimConsumersArgs {
     target_did: Did,
-    claim_consumers: Vec<Did>,
+    claim_consumers: Vec<(Did, Moment)>,
 }
 
 pub fn authorize_claim_consumers(
     target_did: Did,
-    claim_consumers: Vec<Did>,
+    claim_consumers: Vec<(Did, Moment)>,
 ) -> Call<AuthorizeClaimConsumersArgs> {
     Call::new(
         MODULE,
@@ -175,12 +196,12 @@ pub fn revoke_claim_consumers(
 #[derive(Encode)]
 pub struct AuthorizeClaimIssuersArgs {
     target_did: Did,
-    claim_issuers: Vec<Did>,
+    claim_issuers: Vec<(Did, Moment)>,
 }
 
 pub fn authorize_claim_issuers(
     target_did: Did,
-    claim_issuers: Vec<Did>,
+    claim_issuers: Vec<(Did, Moment)>,
 ) -> Call<AuthorizeClaimIssuersArgs> {
     Call::new(
         MODULE,
@@ -308,7 +329,7 @@ pub fn remove_catalog(owner_did: Did, catalog_id: CatalogId) -> Call<RemoveCatal
     )
 }
 #[derive(Encode)]
-pub struct AddDidToCatalogArgs {
+pub struct AddDidsToCatalogArgs {
     owner_did: Did,
     catalog_id: CatalogId,
     dids: Vec<(Did, ShortName)>,
@@ -317,11 +338,32 @@ pub fn add_dids_to_catalog(
     owner_did: Did,
     catalog_id: CatalogId,
     dids: Vec<(Did, ShortName)>,
-) -> Call<AddDidToCatalogArgs> {
+) -> Call<AddDidsToCatalogArgs> {
     Call::new(
         MODULE,
         calls::ADD_DIDS_TO_CATALOG,
-        AddDidToCatalogArgs {
+        AddDidsToCatalogArgs {
+            owner_did,
+            catalog_id,
+            dids,
+        },
+    )
+}
+#[derive(Encode)]
+pub struct RemoveDidsFromCatalogArgs {
+    owner_did: Did,
+    catalog_id: CatalogId,
+    dids: Vec<Did>,
+}
+pub fn remove_dids_from_catalog(
+    owner_did: Did,
+    catalog_id: CatalogId,
+    dids: Vec<Did>,
+) -> Call<RemoveDidsFromCatalogArgs> {
+    Call::new(
+        MODULE,
+        calls::REMOVE_DIDS_FROM_CATALOG,
+        RemoveDidsFromCatalogArgs {
             owner_did,
             catalog_id,
             dids,
